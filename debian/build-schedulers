@@ -1,0 +1,47 @@
+#!/bin/sh
+
+set -eu
+
+operation=$1
+case "$operation" in
+    build|test) ;;
+    *) echo "Usage: $0 build|test" >&2; exit 2 ;;
+esac
+
+CARGO_PROFILE=release
+profile_directory=release
+case " ${DEB_BUILD_OPTIONS:-} " in
+    *" noopt "*)
+        CARGO_PROFILE=dev
+        profile_directory=debug
+        ;;
+esac
+export CARGO_PROFILE
+run_tests=true
+case " ${DEB_BUILD_OPTIONS:-} ${DEB_BUILD_PROFILES:-} " in
+    *" nocheck "*) run_tests=false ;;
+esac
+
+cargo=/usr/share/dh-rust/bin/cargo
+while read -r package scheduler _source _language; do
+    case "$package" in '#'*|'') continue ;; esac
+
+    # Package-specific dep-info keeps the Rust source relations scoped to
+    # the scheduler that links the crates.
+    export CARGO_TARGET_DIR="$PWD/debian/cargo-target/$scheduler"
+    if [ "$operation" = build ]; then
+        "$cargo" build --offline --locked --package "$scheduler" --bin "$scheduler"
+        output="$CARGO_TARGET_DIR/$DEB_HOST_RUST_TYPE/$profile_directory"
+        install -D -m 0755 "$output/$scheduler" "debian/scheduler-bin/$scheduler"
+        rm -f "debian/$package.substvars"
+        /usr/share/dh-rust/bin/dh-rust-built-using "$output" "$package"
+        # dh_prep clears the package substvars before the install phase.
+        mv "debian/$package.substvars" "debian/scheduler-bin/$package.substvars"
+    elif "$run_tests"; then
+        "$cargo" test --offline --locked --package "$scheduler" --bins
+    fi
+
+    if [ "$operation" = test ] || ! "$run_tests"; then
+        rm -rf "$CARGO_TARGET_DIR"
+    fi
+done < debian/schedulers.list

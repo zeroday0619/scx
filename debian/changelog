@@ -1,0 +1,7 @@
+scx (1.1.4+git20261119.c8f241e96010-1) UNRELEASED; urgency=medium
+
+  * Initial packaging. (Closes: #1126281)
+  * Build independent packages for all sched_ext schedulers in the snapshot
+    and provide scx-full to install them together.
+
+ -- Euiseo Cha <escha@zeroday0619.dev>  Thu, 19 Nov 2026 20:30:00 +0900

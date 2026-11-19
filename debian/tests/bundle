@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -eu
+
+while read -r package binary _source _language; do
+    case "$package" in '#'*|'') continue ;; esac
+
+    test "$(dpkg-query -W -f='${Status}' "$package")" = 'install ok installed'
+    test -x "/usr/bin/$binary"
+    dpkg-query -L "$package" | grep -Fx "/usr/bin/$binary"
+    dpkg-query -L "$package" | grep -Fx "/usr/share/man/man8/$binary.8.gz"
+
+    # These schedulers report help on stderr with a nonzero exit status.
+    case "$binary" in
+        scx_lavd|scx_layered|scx_mavd|scx_mitosis|scx_nitosis|scx_p2dq)
+            option=--version
+            ;;
+        *) option=--help ;;
+    esac
+    timeout 10s "/usr/bin/$binary" "$option" > /dev/null
+done < debian/schedulers.list

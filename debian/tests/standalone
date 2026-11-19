@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -eu
+
+test -x /usr/bin/scx_panda
+dpkg-query -L scx-panda | grep -Fx /usr/bin/scx_panda
+timeout 10s /usr/bin/scx_panda --help

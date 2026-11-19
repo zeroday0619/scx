@@ -1,0 +1,27 @@
+.TH SCX_FLASH 8 "" "scx" "System Administration"
+.SH NAME
+scx_flash \- multimedia-oriented sched_ext scheduler
+.SH SYNOPSIS
+.B scx_flash
+.RI [ options ]
+.SH DESCRIPTION
+Flash targets latency-sensitive multimedia workloads such as real-time audio
+processing.
+.PP
+Loading this scheduler requires a kernel with CONFIG_SCHED_CLASS_EXT and
+a process with privileges to load and attach BPF programs.
+.SH OPTIONS
+.TP
+.B \-\-help
+Display the options supported by this command.
+.SH FILES
+.TP
+.I /sys/kernel/sched_ext/state
+Current sched_ext state.
+.TP
+.I /usr/share/doc/scx-flash/
+Upstream scheduler documentation.
+.SH SEE ALSO
+.UR https://docs.kernel.org/scheduler/sched-ext.html
+Linux kernel sched_ext documentation
+.UE

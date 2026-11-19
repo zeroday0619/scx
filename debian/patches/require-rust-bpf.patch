@@ -1,0 +1,42 @@
+Description: Configure offline Rust BPF builds for Debian
+ Fail when the Rust BPF toolchain is incomplete to prevent shipping
+ executables with empty objects. Resolve the standard library's exact
+ build-std dependencies using the Cargo config installed by rust-src.
+ The four nested BPF workspaces have only local scx dependencies.
+Forwarded: not-needed
+Last-Update: 2026-11-19
+
+--- a/rust/scx_rustsched_build/src/lib.rs
++++ b/rust/scx_rustsched_build/src/lib.rs
+@@ -519,6 +519,8 @@
+         }
+     }
+     println!("cargo:rerun-if-env-changed=BPF_RUST_TOOLCHAIN");
++    println!("cargo:rerun-if-env-changed=SCX_REQUIRE_RUST_BPF");
++    println!("cargo:rerun-if-env-changed=SCX_RUST_BPF_CARGO_CONFIG");
+     println!("cargo:rerun-if-env-changed=PATH");
+     // The toolchain that builds the scheduler builds its BPF side too, with
+     // the unstable features enabled. It needs rust-src, and an LLVM that
+@@ -532,6 +534,12 @@
+     // scheduler refuses to start.
+     let missing = missing_tools(&toolchain);
+     if !missing.is_empty() {
++        assert!(
++            env::var("SCX_REQUIRE_RUST_BPF").as_deref() != Ok("1"),
++            "{}: missing Rust BPF build tools: {}",
++            spec.package,
++            missing.join(", ")
++        );
+         println!(
+             "cargo:warning={}: no Rust BPF toolchain ({} missing), \
+              building a binary that cannot load the scheduler",
+@@ -581,6 +589,9 @@
+                         .join(",")
+                 ),
+             );
++        if let Some(config) = env::var_os("SCX_RUST_BPF_CARGO_CONFIG") {
++            command.arg("--config").arg(config);
++        }
+         if sized_topology {
+             command.args(["--features", "topo_size"]);
+         }

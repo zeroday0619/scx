@@ -1,0 +1,30 @@
+.TH SCX_NITOSIS 8 "" "scx" "System Administration"
+.SH NAME
+scx_nitosis \- experimental hierarchical sched_ext scheduler
+.SH SYNOPSIS
+.B scx_nitosis
+.RI [ options ]
+.SH DESCRIPTION
+Nitosis extends Mitosis with arena-based state and cgroup sub-scheduling.
+.PP
+Loading this scheduler requires a kernel with CONFIG_SCHED_CLASS_EXT and
+a process with privileges to load and attach BPF programs.
+.PP
+Set \fB\-\-cell-parent-cgroup\fR to the cgroup containing the workload groups.
+The kernel must provide the \fBsub_cid_sched_updated\fR struct_ops
+callback introduced in Linux 7.4.
+.SH OPTIONS
+.TP
+.B \-\-help
+Display the options supported by this command.
+.SH FILES
+.TP
+.I /sys/kernel/sched_ext/state
+Current sched_ext state.
+.TP
+.I /usr/share/doc/scx-nitosis/
+Upstream scheduler documentation.
+.SH SEE ALSO
+.UR https://docs.kernel.org/scheduler/sched-ext.html
+Linux kernel sched_ext documentation
+.UE

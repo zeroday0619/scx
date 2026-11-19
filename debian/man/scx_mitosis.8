@@ -1,0 +1,29 @@
+.TH SCX_MITOSIS 8 "" "scx" "System Administration"
+.SH NAME
+scx_mitosis \- dynamic CPU affinity sched_ext scheduler
+.SH SYNOPSIS
+.B scx_mitosis
+.RI [ options ]
+.SH DESCRIPTION
+Mitosis adjusts CPU affinity for groups of tasks as their load changes. A
+cgroup configuration defines the groups.
+.PP
+Loading this scheduler requires a kernel with CONFIG_SCHED_CLASS_EXT and
+a process with privileges to load and attach BPF programs.
+.PP
+Set \fB\-\-cell-parent-cgroup\fR to the cgroup containing the workload groups.
+.SH OPTIONS
+.TP
+.B \-\-help
+Display the options supported by this command.
+.SH FILES
+.TP
+.I /sys/kernel/sched_ext/state
+Current sched_ext state.
+.TP
+.I /usr/share/doc/scx-mitosis/
+Upstream scheduler documentation.
+.SH SEE ALSO
+.UR https://docs.kernel.org/scheduler/sched-ext.html
+Linux kernel sched_ext documentation
+.UE

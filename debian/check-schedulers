@@ -1,0 +1,72 @@
+#!/usr/bin/python3
+
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+
+def scheduler_targets():
+    metadata = subprocess.check_output(
+        ["/usr/bin/cargo", "metadata", "--offline", "--no-deps", "--format-version", "1"],
+        text=True,
+    )
+    for crate in json.loads(metadata)["packages"]:
+        source = Path(crate["manifest_path"]).parent.relative_to(Path.cwd())
+        if source.parent not in (Path("scheds/rust"), Path("scheds/experimental")):
+            continue
+        for target in crate["targets"]:
+            if "bin" in target["kind"]:
+                binary = target["name"]
+                language = "rust" if (source / "bpf/Cargo.toml").is_file() else "c"
+                yield binary.replace("_", "-"), binary, str(source), language
+
+
+def check():
+    packaging = Path("debian")
+    entries = [
+        tuple(line.split())
+        for line in (packaging / "schedulers.list").read_text().splitlines()
+        if line and not line.startswith("#")
+    ]
+    expected = set(scheduler_targets())
+    declared = set(entries)
+    if len(entries) != len(declared) or declared != expected:
+        sys.exit(
+            f"Scheduler inventory differs from Cargo metadata. "
+            f"Missing: {sorted(expected - declared)}. Extra: {sorted(declared - expected)}."
+        )
+
+    package_names = set(subprocess.check_output(["dh_listpackages"], text=True).split())
+    control = (packaging / "control").read_text()
+    bundle = next(stanza for stanza in control.split("\n\n")
+                  if stanza.startswith("Package: scx-full\n"))
+    dependencies = [
+        line.strip().rstrip(",")
+        for line in bundle.splitlines() if line.startswith(" scx-")
+    ]
+    members = {package for package, _, _, _ in entries}
+    expected_dependencies = {f"{package} (>= ${{source:Version}})" for package in members}
+    if package_names != members | {"scx-full"} or (
+        len(dependencies) != len(members) or set(dependencies) != expected_dependencies
+    ):
+        sys.exit("The binary package list or scx-full dependencies differ from the inventory.")
+
+    for package, binary, source, _ in entries:
+        package_files = {
+            "docs": f"{source}/README.md",
+            "install": f"usr/bin/{binary} usr/bin",
+            "manpages": f"debian/man/{binary}.8",
+        }
+        for extension, value in package_files.items():
+            file = packaging / f"{package}.{extension}"
+            if file.read_text().strip() != value:
+                sys.exit(f"{file} must contain {value}")
+        if not Path(package_files["docs"]).is_file() or not Path(package_files["manpages"]).is_file():
+            sys.exit(f"{package} is missing its README or manual page.")
+
+    print(f"Validated {len(entries)} schedulers and scx-full.")
+
+
+if __name__ == "__main__":
+    check()

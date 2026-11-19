@@ -1,0 +1,105 @@
+Description: Limit Debian Cargo resolution to the scheduler packages
+ Cargo resolves dependencies of all workspace members and their optional
+ features each time the lockfile is generated. Omit the administration tools
+ and harnesses used only by the upstream kernel integration tests.
+Forwarded: not-needed
+Last-Update: 2026-11-19
+
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -1,13 +1,10 @@
+ [workspace]
+ members = [
+     "rust/scx_arena/scx_arena",
+-    "rust/scx_arena/libarena_selftests",
+-    "rust/scx_arena/selftests",
+     "rust/scx_rustsched_abi",
+     "rust/scx_rustsched_build",
+     "rust/scx_rustsched_loader",
+     "rust/scx_cargo",
+-    "rust/scx_catalog",
+     "rust/scx_raw_pmu",
+     "rust/scx_stats",
+     "rust/scx_stats/scx_stats_derive",
+@@ -37,13 +34,6 @@
+     "scheds/experimental/scx_rlocal",
+     "scheds/experimental/scx_rvtime",
+     "scheds/experimental/scx_tickless",
+-    "tools/scx_characterize",
+-    "tools/scxcli",
+-    "tools/scxtop",
+-    "tools/scxtui",
+-    "tools/scx_forge_agent",
+-    "tools/vmlinux_docify",
+-    "tools/xtask",
+ ]
+ # The Rust BPF runtime and the BPF side of each scheduler on it are built
+ # for a BPF target by the scheduler's build script, each a workspace of its
+--- a/rust/scx_arena/scx_arena/Cargo.toml
++++ b/rust/scx_arena/scx_arena/Cargo.toml
+@@ -9,15 +9,10 @@
+ 
+ [dependencies]
+ anyhow = "1"
+-libarena-rs = { version = "0.3.3", optional = true, features = ["build-support", "compat"] }
+ libc = "0.2"
+ libbpf-rs = "=0.27.2"
+ libbpf-sys = "=1.7.1"
+ scx_utils = { path = "../../scx_utils", version = "1.1.4" }
+-tar = { version = "0.4", optional = true }
+-
+-[features]
+-build-support = ["dep:libarena-rs", "dep:tar"]
+ 
+ [build-dependencies]
+ scx_cargo = { path = "../../scx_cargo", version = "1.1.4" }
+--- a/scheds/experimental/scx_nitosis/Cargo.toml
++++ b/scheds/experimental/scx_nitosis/Cargo.toml
+@@ -29,11 +29,6 @@
+ tracing = "0.1"
+ tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "parking_lot", "tracing-log"] }
+ 
+-# Test-only scheduler harness, pulled in only by the `ktstr-tests` feature for
+-# the gated smoke test under tests/. Not built for normal scheduler builds.
+-# Optional (not a dev-dependency) so the feature can gate it.
+-ktstr = { version = "=0.18.0", optional = true }
+-
+ [build-dependencies]
+ scx_cargo = { path = "../../../rust/scx_cargo", version = "1.1.4" }
+ 
+@@ -43,10 +38,6 @@
+ 
+ [features]
+ enable_backtrace = []
+-# Gates the ktstr-based scheduler smoke test under tests/ and pulls in the
+-# optional ktstr harness. Off by default; enable with `--features ktstr-tests`
+-# under `cargo ktstr test`.
+-ktstr-tests = ["dep:ktstr"]
+ 
+ [lints.clippy]
+ unwrap_used = "deny"
+--- a/scheds/rust/scx_mitosis/Cargo.toml
++++ b/scheds/rust/scx_mitosis/Cargo.toml
+@@ -29,11 +29,6 @@
+ tracing = "0.1"
+ tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "parking_lot", "tracing-log"] }
+ 
+-# Test-only scheduler harness, pulled in only by the `ktstr-tests` feature for
+-# the gated smoke test under tests/. Not built for normal scheduler builds.
+-# Optional (not a dev-dependency) so the feature can gate it.
+-ktstr = { version = "=0.18.0", optional = true }
+-
+ [build-dependencies]
+ scx_cargo = { path = "../../../rust/scx_cargo", version = "1.1.4" }
+ 
+@@ -43,10 +38,6 @@
+ 
+ [features]
+ enable_backtrace = []
+-# Gates the ktstr-based scheduler smoke test under tests/ and pulls in the
+-# optional ktstr harness. Off by default; enable with `--features ktstr-tests`
+-# under `cargo ktstr test`.
+-ktstr-tests = ["dep:ktstr"]
+ 
+ [lints.clippy]
+ unwrap_used = "deny"

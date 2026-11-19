@@ -1,0 +1,67 @@
+Source snapshot
+===============
+
+This Debian revision uses upstream commit
+c8f241e960106b1b5e2c3aecdcd42a11a8a56509, based on the 1.1.4 series.
+Create the original tarball from that full commit before building a source
+package from the checkout.
+
+    version=1.1.4+git20261119.c8f241e96010
+    git archive --format=tar --prefix="scx-$version/" \
+        c8f241e960106b1b5e2c3aecdcd42a11a8a56509 \
+        | xz -T1 > "../scx_$version.orig.tar.xz"
+    dpkg-buildpackage -S -us -uc -d
+
+Run sbuild for amd64 in an unstable build environment after the
+Build-Depends are available. The initial package set targets Debian main.
+Public archive tracking is in https://bugs.debian.org/1126281.
+
+Build
+=====
+
+The scheduler list records each Debian package, Cargo binary, manifest
+location and BPF language. Run debian/check-schedulers after updating the
+upstream snapshot. The same source package builds the full list.
+
+The build uses Rust crate packages from /usr/share/cargo/registry through
+dh-rust and regenerates the root Cargo.lock offline. The clean target
+restores the original root lockfile. The four independent Rust BPF
+workspaces retain their upstream lockfiles and use the Cargo config
+shipped by rust-src for the standard library's pinned dependencies.
+Clang 22 compiles C BPF code. The bpf-linker build in the archive must
+support the LLVM version used by Debian's rustc. The build fails if the
+Rust BPF tooling is incomplete.
+
+The scx scheduler manifests require libbpf-cargo and libbpf-rs 0.27.2,
+libbpf-sys 1.7.1, nix 0.31 and nvml-wrapper 0.12. Debian's system libbpf
+1.7.0 corresponds to libbpf-sys 1.7.1+v1.7.0. New crate packages and
+bpf-linker are tracked separately. Check recursive dependencies and
+crate features when making the packages available to sbuild.
+
+Debian's dh-rust helper records source relationships for each scheduler
+using that scheduler's build outputs. Set DEB_BUILD_OPTIONS=nocheck to
+skip the Rust binary unit tests.
+
+Tests
+=====
+
+The autopkgtests exercise command startup with --help or --version and
+verify file ownership and installation of the scx-full dependency set.
+
+For kernel qualification, boot an amd64 VM with sched_ext and BTF
+enabled. Install and exercise each scheduler with its upstream
+configuration, confirm its struct_ops name and enabled state in
+/sys/kernel/sched_ext, then stop it and confirm the state returns to
+disabled. Mitosis and Nitosis need a cgroup hierarchy for their cells.
+Confirm Nitosis on Linux 7.4 or a kernel with the required struct_ops
+callback backported.
+
+References
+==========
+
+* Debian Policy 4.9
+  https://www.debian.org/doc/debian-policy/ch-source.html#main-building-script-debian-rules
+* Debian Rust Team instructions for Cargo workspaces
+  https://rust-team.pages.debian.net/book/process-workspace.html
+* Linux kernel sched_ext documentation
+  https://docs.kernel.org/scheduler/sched-ext.html

@@ -1,0 +1,5 @@
+Tests: standalone
+Depends: scx-panda
+
+Tests: bundle
+Depends: scx-full

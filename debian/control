@@ -1,0 +1,387 @@
+Source: scx
+Section: admin
+Priority: optional
+Maintainer: Euiseo Cha <escha@zeroday0619.dev>
+Build-Depends:
+ bpf-linker,
+ cargo,
+ clang-22,
+ debhelper-compat (= 13),
+ dh-rust (>= 0.1.4),
+ libbpf-dev (>= 1:1.7.0),
+ libclang-22-dev,
+ libelf-dev,
+ librust-affinity-0.1-dev,
+ librust-anyhow-1-dev,
+ librust-bindgen-dev (>= 0.69),
+ librust-bitvec-1+serde-dev,
+ librust-buddy-system-allocator-0.13-dev,
+ librust-chrono-0.4-dev,
+ librust-clap-4+derive-dev,
+ librust-clap-4+env-dev,
+ librust-clap-4+unicode-dev,
+ librust-clap-4+wrap-help-dev,
+ librust-clap-complete-4-dev,
+ librust-clap-main-0.2-dev,
+ librust-clap-num-1-dev,
+ librust-crossbeam-0.8-dev,
+ librust-csv-1-dev,
+ librust-ctrlc-3+termination-dev,
+ librust-fastrand-2-dev,
+ librust-fb-procfs-0.9-dev,
+ librust-glob-0.3-dev,
+ librust-gpoint-0.3-dev,
+ librust-hex-0.4-dev,
+ librust-include-dir-0.7-dev,
+ librust-inotify-0.11-dev,
+ librust-itertools-0.14-dev,
+ librust-lazy-static-1-dev,
+ librust-libbpf-cargo-0.27.2-dev,
+ librust-libbpf-rs-0.27.2-dev,
+ librust-libbpf-sys-1.7.1-dev,
+ librust-libc-0.2-dev,
+ librust-log-0.4-dev,
+ librust-nix-0.31+event-dev,
+ librust-nix-0.31+process-dev,
+ librust-nix-0.31+resource-dev,
+ librust-nix-0.31+sched-dev,
+ librust-num-0.4-dev,
+ librust-nvml-wrapper-0.12-dev,
+ librust-nvml-wrapper-sys-0.9-dev,
+ librust-once-cell-1-dev,
+ librust-ordered-float-5-dev,
+ librust-paste-1-dev,
+ librust-plain-0.2-dev,
+ librust-proc-macro2-1-dev,
+ librust-procfs-0.18-dev,
+ librust-quote-1-dev,
+ librust-regex-1-dev,
+ librust-ruzstd-0.9-dev,
+ librust-serde-1+derive-dev,
+ librust-serde-json-1-dev,
+ librust-simple-logger-5-dev,
+ librust-simplelog-0.12-dev,
+ librust-sorted-vec-0.8-dev,
+ librust-sscanf-0.5-dev,
+ librust-static-assertions-1-dev,
+ librust-syn-2+extra-traits-dev,
+ librust-syn-2+full-dev,
+ librust-sysinfo-0.39-dev,
+ librust-tar-0.4-dev,
+ librust-tempfile-3-dev,
+ librust-tracing-0.1-dev,
+ librust-tracing-subscriber-0.3+env-filter-dev,
+ librust-tracing-subscriber-0.3+fmt-dev,
+ librust-tracing-subscriber-0.3+parking-lot-dev,
+ librust-tracing-subscriber-0.3+tracing-log-dev,
+ librust-version-compare-0.2-dev,
+ librust-walkdir-2-dev,
+ librust-zbus-5-dev,
+ libzstd-dev,
+ linux-libc-dev,
+ llvm-22,
+ pkgconf,
+ python3,
+ rust-src,
+ rustc (>= 1.91),
+ zlib1g-dev
+Standards-Version: 4.7.4
+Rules-Requires-Root: no
+Homepage: https://github.com/sched-ext/scx
+Vcs-Git: https://github.com/zeroday0619/scx.git -b packaging/debian
+Vcs-Browser: https://github.com/zeroday0619/scx/tree/packaging/debian
+
+Package: scx-beerland
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: locality-oriented sched_ext scheduler
+ Beerland prioritizes CPU locality and scales queue placement and load
+ balancing across cache domains.
+ .
+ This package provides the scx_beerland command.
+
+Package: scx-bpfland
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: per-CPU eligible deadline sched_ext scheduler
+ BPFLand uses per-CPU queues, virtual-time borrowing and requests sized by
+ observed CPU bursts.
+ .
+ This package provides the scx_bpfland command.
+
+Package: scx-cake
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: gaming-oriented sched_ext scheduler
+ CAKE uses per-CPU dispatch and task placement tuned for interactive gaming
+ workloads.
+ .
+ This package provides the scx_cake command.
+
+Package: scx-chaos
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental race-amplifying sched_ext scheduler
+ Chaos perturbs task execution to increase the likelihood of exposing
+ timing-dependent bugs.
+ .
+ This package provides the scx_chaos command.
+
+Package: scx-cosmos
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: CPU-locality sched_ext scheduler
+ Cosmos preserves CPU locality and balances load across cache domains.
+ .
+ This package provides the scx_cosmos command.
+
+Package: scx-eevdf
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: earliest eligible virtual deadline sched_ext scheduler
+ This BPF scheduler implements earliest eligible virtual deadline first
+ scheduling in the sched_ext class.
+ .
+ This package provides the scx_eevdf command.
+
+Package: scx-flash
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: multimedia-oriented sched_ext scheduler
+ Flash targets latency-sensitive multimedia workloads such as real-time
+ audio processing.
+ .
+ This package provides the scx_flash command.
+
+Package: scx-flow
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental topology-aware sched_ext scheduler
+ Flow uses cache topology and per-task state to guide CPU placement and
+ ordering.
+ .
+ This package provides the scx_flow command.
+
+Package: scx-forge
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental sched_ext scheduler template
+ Forge provides a runnable scheduler with tunable policy parameters for use
+ as a template for scheduler generation.
+ .
+ This package provides the scx_forge command.
+
+Package: scx-lavd
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: latency-aware virtual deadline sched_ext scheduler
+ LAVD uses latency criticality to guide CPU selection and virtual-deadline
+ scheduling for interactive tasks.
+ .
+ This package provides the scx_lavd command.
+
+Package: scx-layered
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: configurable layered sched_ext scheduler
+ Layered classifies tasks into layers and applies configurable CPU
+ allocation and scheduling rules to each layer.
+ .
+ This package provides the scx_layered command.
+
+Package: scx-mavd
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental arena-based sched_ext scheduler
+ MAVD is an arena-based variant of LAVD that uses context IDs for per-task
+ state.
+ .
+ This package provides the scx_mavd command.
+
+Package: scx-mitosis
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: dynamic CPU affinity sched_ext scheduler
+ Mitosis adjusts CPU affinity for groups of tasks as their load changes. A
+ cgroup configuration defines the groups.
+ .
+ This package provides the scx_mitosis command.
+
+Package: scx-mlfq
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental feedback queue sched_ext scheduler
+ MLFQ uses feedback from task execution to adapt queue placement and
+ ordering across multiple levels.
+ .
+ This package provides the scx_mlfq command.
+
+Package: scx-nitosis
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental hierarchical sched_ext scheduler
+ Nitosis extends Mitosis with arena-based state and cgroup sub-scheduling.
+ It requires the kernel's sub_cid_sched_updated struct_ops callback.
+ .
+ This package provides the scx_nitosis command.
+
+Package: scx-p2dq
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: pick-two load-balancing sched_ext scheduler
+ P2DQ selects between sampled CPUs or cache domains to balance load and
+ preserve locality.
+ .
+ This package provides the scx_p2dq command.
+
+Package: scx-panda
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental CoDel-based sched_ext scheduler
+ Panda uses per-CPU CoDel queues, cache-distance costs and observed task run
+ durations.
+ .
+ This package provides the scx_panda command.
+
+Package: scx-pandemonium
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: adaptive CoDel-based sched_ext scheduler
+ Pandemonium uses CoDel queue sojourn time and cache-distance costs to guide
+ adaptive task placement.
+ .
+ This package provides the scx_pandemonium command.
+
+Package: scx-rburst
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental Rust BPF burst-aware sched_ext scheduler
+ RBurst uses per-CPU queues and eligible virtual deadlines with requests
+ sized by observed CPU bursts.
+ .
+ This package provides the scx_rburst command.
+
+Package: scx-reevdf
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental Rust BPF eligible deadline sched_ext scheduler
+ REEVDF implements earliest eligible virtual deadline first scheduling in
+ Rust BPF.
+ .
+ This package provides the scx_reevdf command.
+
+Package: scx-rlocal
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental Rust BPF per-CPU sched_ext scheduler
+ RLocal uses per-CPU queues with locality-aware task placement.
+ .
+ This package provides the scx_rlocal command.
+
+Package: scx-rusty
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: multi-domain hybrid sched_ext scheduler
+ Rusty schedules tasks in BPF and balances load between CPU domains from
+ user space.
+ .
+ This package provides the scx_rusty command.
+
+Package: scx-rvtime
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental Rust BPF virtual-time sched_ext scheduler
+ RVTime uses weighted virtual-time ordering with per-CPU queues.
+ .
+ This package provides the scx_rvtime command.
+
+Package: scx-tickless
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Built-Using: ${cargo:Built-Using}
+Static-Built-Using: ${cargo:Static-Built-Using}
+Description: experimental tickless sched_ext scheduler
+ Tickless targets server workloads that benefit from reduced scheduler tick
+ activity and CPU isolation.
+ .
+ This package provides the scx_tickless command.
+
+Package: scx-full
+Section: metapackages
+Architecture: amd64
+Depends:
+ ${misc:Depends},
+ scx-beerland (>= ${source:Version}),
+ scx-bpfland (>= ${source:Version}),
+ scx-cake (>= ${source:Version}),
+ scx-chaos (>= ${source:Version}),
+ scx-cosmos (>= ${source:Version}),
+ scx-eevdf (>= ${source:Version}),
+ scx-flash (>= ${source:Version}),
+ scx-flow (>= ${source:Version}),
+ scx-forge (>= ${source:Version}),
+ scx-lavd (>= ${source:Version}),
+ scx-layered (>= ${source:Version}),
+ scx-mavd (>= ${source:Version}),
+ scx-mitosis (>= ${source:Version}),
+ scx-mlfq (>= ${source:Version}),
+ scx-nitosis (>= ${source:Version}),
+ scx-p2dq (>= ${source:Version}),
+ scx-panda (>= ${source:Version}),
+ scx-pandemonium (>= ${source:Version}),
+ scx-rburst (>= ${source:Version}),
+ scx-reevdf (>= ${source:Version}),
+ scx-rlocal (>= ${source:Version}),
+ scx-rusty (>= ${source:Version}),
+ scx-rvtime (>= ${source:Version}),
+ scx-tickless (>= ${source:Version})
+Description: full set of sched_ext schedulers from scx
+ This metapackage installs all schedulers built by the scx source package
+ for this architecture. Each package provides a command that an
+ administrator can run to select a scheduler.

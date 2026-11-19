@@ -1,0 +1,27 @@
+.TH SCX_P2DQ 8 "" "scx" "System Administration"
+.SH NAME
+scx_p2dq \- pick-two load-balancing sched_ext scheduler
+.SH SYNOPSIS
+.B scx_p2dq
+.RI [ options ]
+.SH DESCRIPTION
+P2DQ selects between sampled CPUs or cache domains to balance load and
+preserve locality.
+.PP
+Loading this scheduler requires a kernel with CONFIG_SCHED_CLASS_EXT and
+a process with privileges to load and attach BPF programs.
+.SH OPTIONS
+.TP
+.B \-\-help
+Display the options supported by this command.
+.SH FILES
+.TP
+.I /sys/kernel/sched_ext/state
+Current sched_ext state.
+.TP
+.I /usr/share/doc/scx-p2dq/
+Upstream scheduler documentation.
+.SH SEE ALSO
+.UR https://docs.kernel.org/scheduler/sched-ext.html
+Linux kernel sched_ext documentation
+.UE

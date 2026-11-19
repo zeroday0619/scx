@@ -1,0 +1,39 @@
+Description: Use the ruzstd and sysinfo series available in Debian
+ The scheduler build scripts use ruzstd's existing StreamingDecoder API.
+ Layered uses system and process information APIs available in sysinfo 0.39.
+Forwarded: not-needed
+Last-Update: 2026-11-19
+
+--- a/rust/scx_cargo/Cargo.toml
++++ b/rust/scx_cargo/Cargo.toml
+@@ -22,7 +22,7 @@
+ bindgen = ">=0.69"
+ 
+ [build-dependencies]
+-ruzstd = "0.8"
++ruzstd = "0.9"
+ tar = "0.4"
+ walkdir = "2"
+ tempfile = "3"
+--- a/rust/scx_utils/Cargo.toml
++++ b/rust/scx_utils/Cargo.toml
+@@ -40,7 +40,7 @@
+ glob = "0.3"
+ lazy_static = "1"
+ libbpf-cargo = "=0.27.2"
+-ruzstd = "0.8"
++ruzstd = "0.9"
+ scx_cargo = { path = "../scx_cargo", version = "1.1.4" }
+ sscanf = "0.5"
+ tar = "0.4"
+--- a/scheds/rust/scx_layered/Cargo.toml
++++ b/scheds/rust/scx_layered/Cargo.toml
+@@ -36,7 +36,7 @@
+ walkdir = "2"
+ nvml-wrapper = "0.12"
+ nix = { version = "0.31", features = ["sched"] }
+-sysinfo = "0.38"
++sysinfo = "0.39"
+ 
+ [dev-dependencies]
+ scx_utils = { path = "../../../rust/scx_utils", version = "1.1.4", features = ["testutils"] }

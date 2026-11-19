@@ -1,0 +1,61 @@
+#!/usr/bin/make -f
+
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
+
+export DEB_HOST_GNU_TYPE
+# The first supported Debian architecture uses Rust's GNU host target.
+export DEB_HOST_RUST_TYPE = x86_64-unknown-linux-gnu
+export CARGO_HOME = $(CURDIR)/debian/cargo_home
+export CARGO_NET_OFFLINE = true
+export CARGO_INCREMENTAL = 0
+export BPF_CLANG = clang-22
+export LIBCLANG_PATH = /usr/lib/llvm-22/lib
+export PATH := /usr/lib/llvm-22/bin:$(PATH)
+export SCX_REQUIRE_RUST_BPF = 1
+export SCX_RUST_BPF_CARGO_CONFIG = /usr/lib/rustlib/src/rust/library/.cargo/config.toml
+unexport BPF_RUST_TOOLCHAIN
+unexport SCX_ALLOW_OLD_CLANG
+unexport RUSTC
+unexport RUSTFLAGS
+unexport CARGO_ENCODED_RUSTFLAGS
+unexport CARGO_BUILD_BUILD_DIR
+
+%:
+	dh $@ --buildsystem=none
+
+override_dh_auto_configure-arch:
+	debian/check-schedulers
+	command -v bpf-linker || { echo "Missing build tool bpf-linker." >&2; exit 1; }
+	command -v llvm-objcopy
+	command -v llvm-nm
+	test -d "$$(rustc --print sysroot)/lib/rustlib/src/rust/library/core"
+	test -r "$(SCX_RUST_BPF_CARGO_CONFIG)"
+	/usr/share/dh-rust/bin/cargo prepare-debian debian/cargo_registry
+	# Preserve the upstream lockfile for dpkg-source and upstream development.
+	test -e debian/Cargo.lock.upstream || cp -p Cargo.lock debian/Cargo.lock.upstream
+	rm -f Cargo.lock
+	/usr/bin/cargo generate-lockfile --offline || { \
+		mv -f debian/Cargo.lock.upstream Cargo.lock; exit 1; \
+	}
+
+override_dh_auto_build-arch:
+	debian/build-schedulers build
+
+override_dh_auto_test-arch:
+	debian/build-schedulers test
+
+override_dh_auto_install-arch:
+	while read -r package scheduler _source _language; do \
+		case "$$package" in \#*|'') continue ;; esac; \
+		install -D -m 0755 "debian/scheduler-bin/$$scheduler" \
+			"debian/tmp/usr/bin/$$scheduler" || exit; \
+		cp "debian/scheduler-bin/$$package.substvars" \
+			"debian/$$package.substvars" || exit; \
+	done < debian/schedulers.list
+
+override_dh_auto_clean:
+	if test -e debian/Cargo.lock.upstream; then \
+		mv -f debian/Cargo.lock.upstream Cargo.lock; \
+	fi
+	rm -rf debian/cargo_home debian/cargo_registry debian/cargo-target debian/scheduler-bin

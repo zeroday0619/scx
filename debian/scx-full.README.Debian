@@ -1,0 +1,18 @@
+Running sched_ext schedulers
+===========================
+
+Each scheduler has its own binary package and command in /usr/bin.
+Commands retain their upstream names, for example scx_panda and
+scx_pandemonium. This package installs the complete set. To retain an
+individual scheduler after removing scx-full, mark it as manually installed
+with apt-mark manual.
+
+Run the selected command with --help to inspect its options. Loading a
+scheduler requires an appropriately privileged process and a kernel with
+sched_ext enabled. Check /sys/kernel/sched_ext/state and the selected
+scheduler's manual for additional requirements. The kernel's scheduler
+resumes control when the active sched_ext scheduler is detached.
+
+Mitosis and Nitosis use cgroup-based configuration. Nitosis also requires
+the sub_cid_sched_updated struct_ops callback from Linux 7.4 or a backport
+that provides it.
